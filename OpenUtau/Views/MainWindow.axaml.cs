@@ -557,7 +557,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
 
-            LoadingWindow.BeginLoading(this);
+            LoadingWindow.BeginLoadingImmediate(this);
             var dialog = await Task.Run(() => lifetime.Windows.FirstOrDefault(w => w is SingersDialog));
             try {
                 if (dialog == null) {
