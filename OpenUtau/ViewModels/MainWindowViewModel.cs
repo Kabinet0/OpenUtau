@@ -153,7 +153,7 @@ namespace OpenUtau.App.ViewModels {
             var defaultTemplate = Path.Combine(PathManager.Inst.TemplatesPath, "default.ustx");
             if (File.Exists(defaultTemplate)) {
                 try {
-                    OpenProjectAsync(new[] { defaultTemplate });
+                    OpenProject(new[] { defaultTemplate });
                     DocManager.Inst.Project.Saved = false;
                     DocManager.Inst.Project.FilePath = string.Empty;
                     this.RaisePropertyChanged(nameof(Title));
@@ -169,7 +169,7 @@ namespace OpenUtau.App.ViewModels {
 
 
 
-        public void OpenProjectAsync(string[] files) {
+        public void OpenProject(string[] files) {
             if (files == null) {
                 return;
             }

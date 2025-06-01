@@ -1408,13 +1408,6 @@ namespace OpenUtau.App.Views {
                         MessageBox.ShowError(this, notif.e, notif.message, true);
                         break;
                 }
-            } else if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(MainWindow)) {
-                if (loadingNotif.startLoading) {
-                    // No delay opening popup
-                    //LoadingWindow.BeginLoadingImmediate(this);
-                } else {
-                    //LoadingWindow.EndLoading();
-                }
             } else if (cmd is VoiceColorRemappingNotification voicecolorNotif) {
                 if (voicecolorNotif.TrackNo < 0 || DocManager.Inst.Project.tracks.Count <= voicecolorNotif.TrackNo) {
                     ValidateTracksVoiceColor();
