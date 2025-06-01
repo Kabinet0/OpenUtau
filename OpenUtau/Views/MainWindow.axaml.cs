@@ -1411,9 +1411,9 @@ namespace OpenUtau.App.Views {
             } else if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(MainWindow)) {
                 if (loadingNotif.startLoading) {
                     // No delay opening popup
-                    LoadingWindow.BeginLoadingImmediate(this);
+                    //LoadingWindow.BeginLoadingImmediate(this);
                 } else {
-                    LoadingWindow.EndLoading();
+                    //LoadingWindow.EndLoading();
                 }
             } else if (cmd is VoiceColorRemappingNotification voicecolorNotif) {
                 if (voicecolorNotif.TrackNo < 0 || DocManager.Inst.Project.tracks.Count <= voicecolorNotif.TrackNo) {
