@@ -142,11 +142,6 @@ namespace OpenUtau.App.ViewModels {
                 }
                 return;
             }
-
-            if (Preferences.Default.LaunchBehaviour == 1) {
-                Page = 1;
-                NewProject();
-            }
         }
 
         public void NewProject() {
