@@ -228,26 +228,39 @@
                 </TextBlock>
               </Grid>
             </Border>
-            <Border Classes="playback" Width="88" HorizontalAlignment="Center">
-              <StackPanel Orientation="Horizontal">
-                <Button Command="{Binding PlaybackViewModel.SeekStart}">
-                  <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
-                        Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 2 4.5 L 7 0 L 7 9 Z"/>
-                </Button>
-                <Button Click="OnPlayOrPause">
-                  <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
-                        Data="M 0 0 L 7 6.5 L 0 13 Z"/>
-                </Button>
-                <Button Command="{Binding PlaybackViewModel.Pause}">
-                  <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
-                        Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 4 0 L 6 0 L 6 9 L 4 9 Z"/>
-                </Button>
-                <Button Command="{Binding PlaybackViewModel.SeekEnd}">
-                  <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
-                        Data="M 0 0 L 5 4.5 L 0 9 Z M 5 0 L 7 0 L 7 9 L 5 9 Z"/>
-                </Button>
-              </StackPanel>
-            </Border>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+              <Border Classes="playback" Width="88" HorizontalAlignment="Left">
+                <StackPanel Orientation="Horizontal" Width="88">
+                  <Button Command="{Binding PlaybackViewModel.SeekStart}">
+                    <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                          Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 2 4.5 L 7 0 L 7 9 Z"/>
+                  </Button>
+                  <Button Click="OnPlayOrPause">
+                    <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                          Data="M 0 0 L 7 6.5 L 0 13 Z"/>
+                  </Button>
+                  <Button Command="{Binding PlaybackViewModel.Pause}">
+                    <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                          Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 4 0 L 6 0 L 6 9 L 4 9 Z"/>
+                  </Button>
+                  <Button Command="{Binding PlaybackViewModel.SeekEnd}">
+                    <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                          Data="M 0 0 L 5 4.5 L 0 9 Z M 5 0 L 7 0 L 7 9 L 5 9 Z"/>
+                  </Button>
+                </StackPanel>
+              </Border>
+              <Border Classes="playback" Width="22" HorizontalAlignment="Right" Margin="4, 0, 0,0">
+                  <StackPanel Orientation="Horizontal" Width="22">
+                    <Button Click="OnRecord" Width="22">
+                      <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" Width="7" Height="7" Stretch="Fill"> 
+                        <Path.Data>
+                          <EllipseGeometry Center="0,0" RadiusX="4" RadiusY="4"/>
+                        </Path.Data>  
+                      </Path>
+                    </Button>
+                </StackPanel>
+              </Border>
+            </StackPanel>
             <Border Classes="playback" Width="72" HorizontalAlignment="Right" Margin="4,0">
               <Grid>
                 <TextBlock Text="{Binding Path=PlaybackViewModel.PlayPosTime, StringFormat={}{0:mm\\:ss\\.fff}}"/>

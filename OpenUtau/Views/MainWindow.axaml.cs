@@ -918,6 +918,10 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void OnRecord(object sender, RoutedEventArgs args) {
+            Log.Information("Record button!");
+        }
+
         void OnPlayOrPause(object sender, RoutedEventArgs args) {
             PlayOrPause();
         }

@@ -6,6 +6,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using OpenUtau.Classic;
 using OpenUtau.Core;
+using OpenUtau.Core.Recording;
 using Serilog;
 
 namespace OpenUtau.App.Views {
@@ -38,6 +39,7 @@ namespace OpenUtau.App.Views {
                 Log.Information("Initializing OpenUtau.");
                 ToolsManager.Inst.Initialize();
                 SingerManager.Inst.Initialize();
+                MidiDeviceManager.Inst.Initialize();
                 DocManager.Inst.Initialize(mainThread, mainScheduler);
                 DocManager.Inst.PostOnUIThread = action => Avalonia.Threading.Dispatcher.UIThread.Post(action);
                 Log.Information("Initialized OpenUtau.");
