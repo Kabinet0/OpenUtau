@@ -273,6 +273,7 @@
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="BorderBrush" Value="{DynamicResource NeutralAccentBrushSemi}"/>
     <Setter Property="Height" Value="20"/>
+    <Setter Property="ClipToBounds" Value="True"/>
   </Style>
   <Style Selector="Border.playback TextBlock">
     <Setter Property="Padding" Value="6,0,0,1"/>
@@ -288,7 +289,7 @@
   <Style Selector="Border.playback Button">
     <Setter Property="Margin" Value="0"/>
     <Setter Property="Padding" Value="0"/>
-    <Setter Property="Width" Value="21"/>
+    <Setter Property="Width" Value="22"/>
     <Setter Property="Height" Value="19"/>
     <Setter Property="Background" Value="Transparent"/>
   </Style>
