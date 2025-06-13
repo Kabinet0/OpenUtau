@@ -638,9 +638,7 @@ namespace OpenUtau.App.Views {
                 Preferences.Reset();
                 dataContext = new PreferencesViewModel();
             }
-            var dialog = new PreferencesDialog() {
-                DataContext = dataContext
-            };
+            var dialog = new PreferencesDialog(dataContext);
             dialog.ShowDialog(this);
             if (dialog.Position.Y < 0) {
                 dialog.Position = dialog.Position.WithY(0);

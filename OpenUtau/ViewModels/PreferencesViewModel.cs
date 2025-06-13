@@ -12,6 +12,9 @@ using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using OpenUtau.Core.Render;
+using DynamicData.Binding;
+using OpenUtau.Core.Recording;
+using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class PreferencesViewModel : ViewModelBase {
@@ -23,6 +26,20 @@ namespace OpenUtau.App.ViewModels {
             get => audioOutputDevice;
             set => this.RaiseAndSetIfChanged(ref audioOutputDevice, value);
         }
+
+        public int SelectedDeviceIndex { 
+            get => selectedDeviceIndex; 
+            set {
+                this.RaiseAndSetIfChanged(ref selectedDeviceIndex, value);
+
+                if (value >= 0) {
+                    MidiDeviceManager.Inst.SetSelectedDeviceID(value);
+                }
+            }
+        }
+
+        private int selectedDeviceIndex;
+
         [Reactive] public int PreferPortAudio { get; set; }
         [Reactive] public int PlaybackAutoScroll { get; set; }
         [Reactive] public double PlayPosMarkerMargin { get; set; }
@@ -106,6 +123,8 @@ namespace OpenUtau.App.ViewModels {
         private CultureInfo? language;
         private CultureInfo? sortingOrder;
 
+        public ObservableCollectionExtended<string> DisplayedMidiDevices { get; set; } = new ObservableCollectionExtended<string>();
+
         public PreferencesViewModel() {
             var audioOutput = PlaybackManager.Inst.AudioOutput;
             if (audioOutput != null) {
@@ -167,6 +186,9 @@ namespace OpenUtau.App.ViewModels {
             RememberUst = Preferences.Default.RememberUst;
             RememberVsqx = Preferences.Default.RememberVsqx;
             ClearCacheOnQuit = Preferences.Default.ClearCacheOnQuit;
+
+            DisplayedMidiDevices.Clear();
+            DisplayedMidiDevices.AddRange(MidiDeviceManager.Inst.GetDeviceNameList());
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
                 .WhereNotNull()
@@ -396,6 +418,12 @@ namespace OpenUtau.App.ViewModels {
             Preferences.Default.SetParamPath = path;
             Preferences.Save();
             this.RaisePropertyChanged(nameof(SetParamPath));
+        }
+
+        public void RefreshMidiDevices() {
+            MidiDeviceManager.Inst.RefreshMidiDevices();
+            DisplayedMidiDevices.Clear();
+            DisplayedMidiDevices.AddRange(MidiDeviceManager.Inst.GetDeviceNameList());
         }
     }
 }

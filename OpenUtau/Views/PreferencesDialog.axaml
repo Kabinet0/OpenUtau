@@ -10,9 +10,10 @@
         Icon="/Assets/open-utau.ico"
         Title="{DynamicResource prefs.caption}"
         WindowStartupLocation="CenterScreen"
-        Width="800" Height="400">
+        Width="800" Height="448">
   <Window.Resources>
     <vm:CultureNameConverter x:Key="cultureNameConverter"/>
+    <vm:ListIsEmptyConverter x:Key="listIsEmptyConverter"/>
   </Window.Resources>
   <Window.Styles>
     <Style Selector="TextBlock">
@@ -46,6 +47,7 @@
         </Style>
       </ListBox.Styles>
       <ListBoxItem Content="{DynamicResource prefs.playback}"/>
+      <ListBoxItem Content="{DynamicResource prefs.recording}"/>
       <ListBoxItem Content="{DynamicResource prefs.paths}"/>
       <ListBoxItem Content="{DynamicResource prefs.editing}"/>
       <ListBoxItem Content="{DynamicResource prefs.rendering}"/>
@@ -94,6 +96,22 @@
           </Grid>
         </StackPanel>
 
+        <!-- Recording -->
+        <StackPanel>
+            <TextBlock Text="{DynamicResource prefs.playback.midiDevices}" Margin="0, 4, 0, 4"/>
+            <Border BorderThickness="1" BorderBrush="{DynamicResource NeutralAccentBrushSemi}" Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}" MinHeight="200" Margin="0, 4, 0, 4">
+                <StackPanel>
+                    <ListBox 
+                        Name="MidiDeviceGrid" Margin="0"
+                        BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}" SelectionMode="Single"
+                        ItemsSource="{Binding DisplayedMidiDevices}" SelectedIndex="{Binding SelectedDeviceIndex}" 
+                    />
+                    <TextBlock Margin="4" FontStyle="Italic" FontSize="12" Text="List is empty" IsVisible="{Binding DisplayedMidiDevices, Converter={StaticResource listIsEmptyConverter}}" />
+                </StackPanel>
+            </Border>
+            <Button Content="{DynamicResource prefs.playback.refreshMidiDevices}" Margin="0, 4, 0, 4" HorizontalAlignment="Stretch" Click="RefreshMidiDevices"/>
+        </StackPanel>
+          
         <!-- Paths -->
         <StackPanel>
           <TextBlock Text="{DynamicResource prefs.paths.addlsinger}"/>

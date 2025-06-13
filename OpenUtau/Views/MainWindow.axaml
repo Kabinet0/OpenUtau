@@ -249,9 +249,9 @@
                   </Button>
                 </StackPanel>
               </Border>
-              <Border Classes="playback" Width="22" HorizontalAlignment="Right" Margin="4, 0, 0,0">
-                  <StackPanel Orientation="Horizontal" Width="22">
-                    <Button Click="OnRecord" Width="22">
+              <Border Classes="playback" Width="21" HorizontalAlignment="Right" Margin="4, 0, 0,0">
+                  <StackPanel Orientation="Horizontal" Width="21">
+                    <Button Click="OnRecord" Width="21">
                       <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" Width="7" Height="7" Stretch="Fill"> 
                         <Path.Data>
                           <EllipseGeometry Center="0,0" RadiusX="4" RadiusY="4"/>
