@@ -5,11 +5,16 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
+using OpenUtau.Core.Recording;
+using Serilog;
 
 namespace OpenUtau.App.Views {
     public partial class PreferencesDialog : Window {
-        public PreferencesDialog() {
+        public PreferencesDialog(PreferencesViewModel dataContext) {
+            DataContext = dataContext;
+
             InitializeComponent();
+            SyncSelectedMidiDevie();
         }
 
         void ResetAddlSingersPath(object sender, RoutedEventArgs e) {
@@ -94,6 +99,22 @@ namespace OpenUtau.App.Views {
             }
 
             ((PreferencesViewModel)DataContext!).SetWinePath(winePath);
+        }
+        public void RefreshMidiDevices(object sender, RoutedEventArgs e) {
+            ((PreferencesViewModel)DataContext!).RefreshMidiDevices();
+
+            SyncSelectedMidiDevie();
+        }
+
+        private void SyncSelectedMidiDevie() {
+            int? selectedIndex = MidiDeviceManager.Inst.GetSelectedDeviceIndex();
+            if (selectedIndex.HasValue) {
+                Log.Information("Selectd index after sync is: " + selectedIndex.Value);
+                ((PreferencesViewModel)DataContext!).SelectedDeviceIndex = selectedIndex.Value;
+            } else {
+                // Do not default select something if the MidiDevieManager has no selection
+                ((PreferencesViewModel)DataContext!).SelectedDeviceIndex = -1;
+            }
         }
     }
 }

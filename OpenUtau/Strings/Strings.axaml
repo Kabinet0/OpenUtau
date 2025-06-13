@@ -440,6 +440,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.paths.reset">Reset</system:String>
   <system:String x:Key="prefs.paths.select">Select</system:String>
   <system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>
+  <system:String x:Key="prefs.recording">Recording</system:String>
   <system:String x:Key="prefs.playback">Playback</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>
@@ -450,6 +451,8 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.playback.backend.mini">MiniAudio</system:String>
   <system:String x:Key="prefs.playback.cursorposition">Auto-Scroll Margin</system:String>
   <system:String x:Key="prefs.playback.device">Playback Device</system:String>
+  <system:String x:Key="prefs.playback.midiDevices">MIDI Devices</system:String>
+  <system:String x:Key="prefs.playback.refreshMidiDevices">Refresh MIDI Devices</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">On Pausing</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">Do nothing</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">Move cursor and view position back to where you started playing</system:String>
