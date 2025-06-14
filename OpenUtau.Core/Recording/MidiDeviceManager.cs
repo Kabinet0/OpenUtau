@@ -1,5 +1,6 @@
 ﻿using OpenUtau.Core.Util;
 using Melanchall.DryWetMidi.Multimedia;
+using Melanchall.DryWetMidi.Core;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -47,15 +48,18 @@ namespace OpenUtau.Core.Recording {
             if (deviceID < 0 || deviceID >= midiDevices.Count) {
                 throw new IndexOutOfRangeException();
             }
+            ClearMidiEventHandling();
 
             selectedDeviceIndex = deviceID;
             SetLastDeviceName(midiDevices[selectedDeviceIndex].Name);
 
-            Log.Information("Set selected ID to " + deviceID);
-            Log.Information("Device name is now " + Preferences.Default.LastSelectedMidiDevice);
+            SetupMidiEventHandling();
+
+            Log.Information("Set selected MIDI device to: " + Preferences.Default.LastSelectedMidiDevice + " (ID " + deviceID + ")");
         }
 
         public void RefreshMidiDevices() {
+            ClearMidiEventHandling();
             foreach (var device in midiDevices) {
                 // All instances must be manually disposed of manually before creating or using new instances
                 // See: https://melanchall.github.io/drywetmidi/articles/devices/Input-device.html
@@ -76,14 +80,60 @@ namespace OpenUtau.Core.Recording {
                 }
             }
 
-            Log.Information("Within reload last device name is " + Preferences.Default.LastSelectedMidiDevice);
-
+            
             var selectedDevice = GetSelectedDevice();
             if (selectedDevice != null) {
                 SetLastDeviceName(selectedDevice.Name);
+                Log.Information("Last MIDI device: [" + Preferences.Default.LastSelectedMidiDevice + "] was selected after reload.");
             }
 
-            
+            SetupMidiEventHandling();
+        }
+
+        private void SetupMidiEventHandling() {
+            var selectedDevice = GetSelectedDevice();
+
+            if (selectedDevice != null) {
+                selectedDevice.EventReceived += HandleMidiEvent;
+                selectedDevice.StartEventsListening();
+                selectedDevice.SilentNoteOnPolicy = SilentNoteOnPolicy.NoteOff;
+            }
+        }
+
+        private void ClearMidiEventHandling() {
+            var selectedDevice = GetSelectedDevice();
+
+            if (selectedDevice != null) {
+                selectedDevice.EventReceived -= HandleMidiEvent;
+
+                if (selectedDevice.IsEnabled) {
+                    try {
+                        selectedDevice.StopEventsListening();
+                    } catch (Exception e) {
+                        Log.Information("Error unsubscribing from MIDI device: " + e.Message);
+                    }
+                }
+
+            }
+        }
+
+        private void HandleMidiEvent(object sender, MidiEventReceivedEventArgs args) {
+            var eventType = args.Event.EventType;
+
+            // Could expand later to handle more events like starting recording from MIDI keyboard
+            switch (eventType) {
+                case MidiEventType.NoteOn:
+                    NoteOnEvent noteOnEvent = (NoteOnEvent)args.Event;
+                    
+                    Log.Information("NoteOn: " + args.Event.DeltaTime + ", note: " + noteOnEvent.NoteNumber);
+                    break;
+                case MidiEventType.NoteOff:
+                    NoteOffEvent noteOffEvent = (NoteOffEvent)args.Event;
+
+                    Log.Information("NoteOff: " + args.Event.DeltaTime + ", note: " + noteOffEvent.NoteNumber);
+                    break;
+            }
+             
         }
     }
 }

@@ -15,6 +15,7 @@ using OpenUtau.Core.Render;
 using DynamicData.Binding;
 using OpenUtau.Core.Recording;
 using Serilog;
+using System.Collections.ObjectModel;
 
 namespace OpenUtau.App.ViewModels {
     public class PreferencesViewModel : ViewModelBase {
@@ -123,8 +124,13 @@ namespace OpenUtau.App.ViewModels {
         private AudioOutputDevice? audioOutputDevice;
         private CultureInfo? language;
         private CultureInfo? sortingOrder;
+        private List<string> _displayedMidiDevices = new List<string>();
+        
+        public List<string> DisplayedMidiDevices {
+            get => _displayedMidiDevices;
+            set => this.RaiseAndSetIfChanged(ref _displayedMidiDevices, value);
+        }
 
-        public ObservableCollectionExtended<string> DisplayedMidiDevices { get; set; } = new ObservableCollectionExtended<string>();
 
         public PreferencesViewModel() {
             var audioOutput = PlaybackManager.Inst.AudioOutput;
@@ -435,8 +441,7 @@ namespace OpenUtau.App.ViewModels {
         
         public void RefreshMidiDevices() {
             MidiDeviceManager.Inst.RefreshMidiDevices();
-            DisplayedMidiDevices.Clear();
-            DisplayedMidiDevices.AddRange(MidiDeviceManager.Inst.GetDeviceNameList());
+            DisplayedMidiDevices = MidiDeviceManager.Inst.GetDeviceNameList();
         }
     }
 }

@@ -109,7 +109,6 @@ namespace OpenUtau.App.Views {
         private void SyncSelectedMidiDevie() {
             int? selectedIndex = MidiDeviceManager.Inst.GetSelectedDeviceIndex();
             if (selectedIndex.HasValue) {
-                Log.Information("Selectd index after sync is: " + selectedIndex.Value);
                 ((PreferencesViewModel)DataContext!).SelectedDeviceIndex = selectedIndex.Value;
             } else {
                 // Do not default select something if the MidiDevieManager has no selection

@@ -22,15 +22,15 @@ namespace OpenUtau.App.ViewModels {
 
     public class ListIsEmptyConverter : IValueConverter {
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) {
-            if (value == null) return "true";
+            if (value == null) return true;
             else {
                 ICollection? list = value as ICollection;
                 if (list?.Count == 0) {
-                    return "true";
+                    return true;
                 }
             }
 
-            return "false";
+            return false;
         }
 
         public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => throw new NotImplementedException();
