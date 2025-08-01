@@ -13,6 +13,9 @@ namespace OpenUtau.Core.Recording {
 
         private int selectedDeviceIndex = -1;
 
+        public event EventHandler<int> MidiNoteOnEvent;
+        public event EventHandler<int> MidiNoteOffEvent;
+
         public void Initialize() {
             RefreshMidiDevices();
         }
@@ -97,6 +100,9 @@ namespace OpenUtau.Core.Recording {
                 selectedDevice.EventReceived += HandleMidiEvent;
                 selectedDevice.StartEventsListening();
                 selectedDevice.SilentNoteOnPolicy = SilentNoteOnPolicy.NoteOff;
+
+                //var outputDevice = OutputDevice.GetByName("Microsoft GS Wavetable Synth");
+                //var devicesConnector = selectedDevice.Connect(outputDevice);
             }
         }
 
@@ -126,11 +132,14 @@ namespace OpenUtau.Core.Recording {
                     NoteOnEvent noteOnEvent = (NoteOnEvent)args.Event;
                     
                     Log.Information("NoteOn: " + args.Event.DeltaTime + ", note: " + noteOnEvent.NoteNumber);
+                    MidiNoteOnEvent?.Invoke(this, noteOnEvent.NoteNumber);
+
                     break;
                 case MidiEventType.NoteOff:
                     NoteOffEvent noteOffEvent = (NoteOffEvent)args.Event;
 
                     Log.Information("NoteOff: " + args.Event.DeltaTime + ", note: " + noteOffEvent.NoteNumber);
+                    MidiNoteOffEvent?.Invoke(this, noteOffEvent.NoteNumber);
                     break;
             }
              

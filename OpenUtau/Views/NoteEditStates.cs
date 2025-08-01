@@ -8,6 +8,7 @@ using Avalonia.Input;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
+using OpenUtau.Core.Format.MusicXMLSchema;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 
@@ -38,6 +39,25 @@ namespace OpenUtau.App.Views {
         public void End(IPointer pointer, Point point) {
             pointer.Capture(null);
             PlaybackManager.Inst.EndTone(MusicMath.ToneToFreq(activeTone));
+        }
+    }
+    
+    class MidiDevicePlayState {
+        SineGen? toneGen;
+
+        public void Begin(int tone) {
+            // End existing copy of tone if already exists
+            if (toneGen != null) {
+                toneGen.Stop = true;
+            }
+
+            toneGen = PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(tone));
+        }
+
+        public void End(int tone) {
+            if (toneGen != null) {
+                toneGen.Stop = true;
+            }
         }
     }
 

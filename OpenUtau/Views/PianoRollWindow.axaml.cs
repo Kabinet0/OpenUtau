@@ -14,6 +14,7 @@ using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Editing;
+using OpenUtau.Core.Recording;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
@@ -40,6 +41,8 @@ namespace OpenUtau.App.Views {
         private ReactiveCommand<Unit, Unit> lyricsDialogCommand;
         private ReactiveCommand<Unit, Unit> noteDefaultsCommand;
         private ReactiveCommand<BatchEdit, Unit> noteBatchEditCommand;
+
+        private MidiDevicePlayState midiDevicePlayState = new MidiDevicePlayState();
 
         public PianoRollWindow() {
             InitializeComponent();
@@ -170,6 +173,9 @@ namespace OpenUtau.App.Views {
             this.AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel | RoutingStrategies.Bubble);
 
             DocManager.Inst.AddSubscriber(this);
+
+            MidiDeviceManager.Inst.MidiNoteOnEvent += MidiDeviceNoteOn;
+            MidiDeviceManager.Inst.MidiNoteOffEvent += MidiDeviceNoteOff;
         }
 
         public void WindowDeactivated(object sender, EventArgs args) {
@@ -438,6 +444,14 @@ namespace OpenUtau.App.Views {
                 keyboardPlayState.End(args.Pointer, args.GetPosition(element));
                 keyboardPlayState = null;
             }
+        }
+
+        public void MidiDeviceNoteOn(object? sender, int tone) {
+            midiDevicePlayState.Begin(tone);
+        }
+
+        public void MidiDeviceNoteOff(object? sender, int tone) {
+            midiDevicePlayState.End(tone);
         }
 
         public void HScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
