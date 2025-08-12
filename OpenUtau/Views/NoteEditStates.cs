@@ -43,21 +43,19 @@ namespace OpenUtau.App.Views {
     }
     
     class MidiDevicePlayState {
-        SineGen? toneGen;
-
+        private int activeTone;
+        
         public void Begin(int tone) {
-            // End existing copy of tone if already exists
-            if (toneGen != null) {
-                toneGen.Stop = true;
+            if (activeTone != tone) {
+                PlaybackManager.Inst.EndTone(MusicMath.ToneToFreq(activeTone));
             }
 
-            toneGen = PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(tone));
+            PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(tone));
+            activeTone = tone;
         }
 
         public void End(int tone) {
-            if (toneGen != null) {
-                toneGen.Stop = true;
-            }
+            PlaybackManager.Inst.EndTone(MusicMath.ToneToFreq(tone));
         }
     }
 

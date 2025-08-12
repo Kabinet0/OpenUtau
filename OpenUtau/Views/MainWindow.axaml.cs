@@ -19,6 +19,7 @@ using OpenUtau.Core;
 using OpenUtau.Core.Analysis.Some;
 using OpenUtau.Core.DiffSinger;
 using OpenUtau.Core.Format;
+using OpenUtau.Core.Recording;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
@@ -38,6 +39,8 @@ namespace OpenUtau.App.Views {
         private readonly DispatcherTimer timer;
         private readonly DispatcherTimer autosaveTimer;
         private bool forceClose;
+
+        private MidiDevicePlayState midiDevicePlayState = new MidiDevicePlayState();
 
         private bool shouldOpenPartsContextMenu;
 
@@ -86,6 +89,9 @@ namespace OpenUtau.App.Views {
                 TaskScheduler.FromCurrentSynchronizationContext());
             Log.Information("Created main window.");
             this.Cursor = null;
+
+            MidiDeviceManager.Inst.MidiNoteOnEvent += MidiDeviceNoteOn;
+            MidiDeviceManager.Inst.MidiNoteOffEvent += MidiDeviceNoteOff;
         }
 
         public void InitProject() {
@@ -926,6 +932,14 @@ namespace OpenUtau.App.Views {
 
         void PlayOrPause() {
             viewModel.PlaybackViewModel.PlayOrPause();
+        }
+
+        public void MidiDeviceNoteOn(object? sender, int tone) {
+            midiDevicePlayState.Begin(tone);
+        }
+
+        public void MidiDeviceNoteOff(object? sender, int tone) {
+            midiDevicePlayState.End(tone);
         }
 
         public void HScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
