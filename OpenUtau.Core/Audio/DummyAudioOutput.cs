@@ -11,7 +11,7 @@ namespace OpenUtau.Audio {
         public void Init(ISampleProvider sampleProvider) { }
         public void Pause() { }
         public void Play() { }
-        public void SelectDevice(Guid guid, int deviceNumber) { }
+        public void SelectDevice(string guid, int deviceNumber) { }
         public void Stop() { }
     }
 }

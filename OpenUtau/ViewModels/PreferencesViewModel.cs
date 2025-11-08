@@ -43,6 +43,8 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool Beta { get; set; }
 
         // Playback
+        public List<int> AudioBufferSizeOptions { get; } = new List<int> { 25, 100, 512, 1024, 2048, 4096, 8192, 12288 };
+
         private List<AudioOutputDevice>? audioOutputDevices;
         private AudioOutputDevice? audioOutputDevice;
 
@@ -55,6 +57,8 @@ namespace OpenUtau.App.ViewModels {
             set => this.RaiseAndSetIfChanged(ref audioOutputDevice, value);
         }
         [Reactive] public int PreferPortAudio { get; set; }
+
+        [Reactive] public int AudioBufferSize { get; set; }
         [Reactive] public int LockStartTime { get; set; }
         [Reactive] public int PlaybackAutoScroll { get; set; }
         [Reactive] public double PlayPosMarkerMargin { get; set; }
@@ -134,6 +138,7 @@ namespace OpenUtau.App.ViewModels {
                 }
             }
             PreferPortAudio = Preferences.Default.PreferPortAudio ? 1 : 0;
+            AudioBufferSize = Preferences.Default.AudioBufferSize;
             PlaybackAutoScroll = Preferences.Default.PlaybackAutoScroll;
             PlayPosMarkerMargin = Preferences.Default.PlayPosMarkerMargin;
             LockStartTime = Preferences.Default.LockStartTime;
@@ -191,7 +196,10 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(device => {
                     if (PlaybackManager.Inst.AudioOutput != null) {
                         try {
-                            PlaybackManager.Inst.AudioOutput.SelectDevice(device.guid, device.deviceNumber);
+                            PlaybackManager.Inst.AudioOutput.SelectDevice(
+                                device.api != "Wasapi" ? device.guid.ToString() : device.wasapiEndpointID, 
+                                device.deviceNumber
+                             );
                         } catch (Exception e) {
                             DocManager.Inst.ExecuteCmd(new ErrorMessageNotification($"Failed to select device {device.name}", e));
                         }
@@ -201,6 +209,14 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(index => {
                     Preferences.Default.PreferPortAudio = index > 0;
                     Preferences.Save();
+                });
+
+            this.WhenAnyValue(vm => vm.AudioBufferSize)
+                .Subscribe(audioBufferSize => {
+                    bool needBackendRefresh = Preferences.Default.AudioBufferSize != audioBufferSize;
+                    Preferences.Default.AudioBufferSize = audioBufferSize;
+                    Preferences.Save();
+                    if (needBackendRefresh) PlaybackManager.Inst.RefreshAudioBackend();
                 });
             this.WhenAnyValue(vm => vm.PlaybackAutoScroll)
                 .Subscribe(autoScroll => {

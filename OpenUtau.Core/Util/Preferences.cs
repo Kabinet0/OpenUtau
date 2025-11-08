@@ -163,6 +163,7 @@ namespace OpenUtau.Core.Util {
             public Dictionary<string, string> SingerPhonemizers = new Dictionary<string, string>();
             public List<string> RecentPhonemizers = new List<string>();
             public bool PreferPortAudio = false;
+            public int AudioBufferSize = 8192;
             public double PlayPosMarkerMargin = 0.9;
             public int LockStartTime = 0;
             public int PlaybackAutoScroll = 2;

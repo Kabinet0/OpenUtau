@@ -8,6 +8,7 @@ namespace OpenUtau.Audio {
         public string api;
         public int deviceNumber;
         public Guid guid;
+        public string wasapiEndpointID; // Only used on Windows
 
         public override string ToString() => $"[{api}] {name}";
     }
@@ -16,7 +17,7 @@ namespace OpenUtau.Audio {
         PlaybackState PlaybackState { get; }
         int DeviceNumber { get; }
 
-        void SelectDevice(Guid guid, int deviceNumber);
+        void SelectDevice(string guid, int deviceNumber);
         void Init(ISampleProvider sampleProvider);
         void Pause();
         void Play();

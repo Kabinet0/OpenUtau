@@ -201,6 +201,12 @@ namespace OpenUtau.Core {
             AudioOutput.Play();
         }
 
+        public void RefreshAudioBackend() {
+            AudioOutput.Stop();
+            AudioOutput.Init(editingMix);
+            AudioOutput.Play();
+        }
+
         public void PlayTone(double freq) {
             toneGenerator.StartTone(freq);
 
@@ -262,11 +268,15 @@ namespace OpenUtau.Core {
         public void StopPlayback() {
             AudioOutput.Stop();
             PlayingMaster = false;
+
+            toneGenerator.EndAllTones();
         }
 
         public void PausePlayback() {
             AudioOutput.Pause();
             PlayingMaster = false;
+
+            toneGenerator.EndAllTones();
         }
 
         private void StartPlayback(double startMs, MasterAdapter masterAdapter) {

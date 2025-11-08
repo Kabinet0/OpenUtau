@@ -452,6 +452,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Page Scroll</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationary Cursor</system:String>
   <system:String x:Key="prefs.playback.backend">Audio Backend</system:String>
+  <system:String x:Key="prefs.playback.audioBufferSize">Audio Buffer Size</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>
   <system:String x:Key="prefs.playback.backend.mini">MiniAudio</system:String>
   <system:String x:Key="prefs.playback.cursorposition">Auto-Scroll Margin</system:String>

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using NAudio.CoreAudioApi;
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using OpenUtau.Core.Util;
 
 namespace OpenUtau.Audio {
@@ -11,105 +13,117 @@ namespace OpenUtau.Audio {
         const int Channels = 2;
 
         private readonly object lockObj = new object();
-        private WaveOutEvent waveOutEvent;
-        private int deviceNumber;
+        private WasapiOut wasapiOut;
+        private string selectedDeviceID;
 
         public NAudioOutput() {
-            if (Guid.TryParse(Preferences.Default.PlaybackDevice, out var guid)) {
-                SelectDevice(guid, Preferences.Default.PlaybackDeviceNumber);
-            } else {
-                SelectDevice(new Guid(), 0);
-            }
+            SelectDevice(Preferences.Default.PlaybackDevice, Preferences.Default.PlaybackDeviceNumber);
         }
 
         public PlaybackState PlaybackState {
             get {
                 lock (lockObj) {
-                    return waveOutEvent == null ? PlaybackState.Stopped : waveOutEvent.PlaybackState;
+                    return wasapiOut == null ? PlaybackState.Stopped : wasapiOut.PlaybackState;
                 }
             }
         }
 
+        private int deviceNumber;
         public int DeviceNumber => deviceNumber;
 
         public long GetPosition() {
             lock (lockObj) {
-                return waveOutEvent == null
+                return wasapiOut == null
                     ? 0
-                    : waveOutEvent.GetPosition() / Channels;
+                    : wasapiOut.GetPosition() / Channels;
             }
         }
 
         public void Init(ISampleProvider sampleProvider) {
             lock (lockObj) {
-                if (waveOutEvent != null) {
-                    waveOutEvent.Stop();
-                    waveOutEvent.Dispose();
+                if (wasapiOut != null) {
+                    wasapiOut.Stop();
+                    wasapiOut.Dispose();
                 }
-                waveOutEvent = new WaveOutEvent() {
-                    DeviceNumber = deviceNumber,
-                    DesiredLatency = 100
-                };
-                waveOutEvent.Init(sampleProvider);
+
+                var enumerator = new MMDeviceEnumerator();
+
+                MixingSampleProvider a;
+                try {
+                    wasapiOut = new WasapiOut(
+                        enumerator.GetDevice(selectedDeviceID),
+                        AudioClientShareMode.Shared,
+                        true,
+                        Math.Max((int)((Preferences.Default.AudioBufferSize / 44100.0f) * 1000), 30)
+                    );
+                    wasapiOut.Init(sampleProvider);
+
+                } catch (System.Exception) {
+                    // Handle the case where the saved device is not available
+                    throw new Exception("Failed to access audio device");
+                }
             }
         }
 
         public void Pause() {
             lock (lockObj) {
-                if (waveOutEvent != null) {
-                    waveOutEvent.Pause();
+                if (wasapiOut != null) {
+                    wasapiOut.Pause();
                 }
             }
         }
 
         public void Play() {
             lock (lockObj) {
-                if (waveOutEvent != null) {
-                    waveOutEvent.Play();
+                if (wasapiOut != null) {
+                    wasapiOut.Play();
                 }
             }
         }
 
         public void Stop() {
             lock (lockObj) {
-                if (waveOutEvent != null) {
-                    waveOutEvent.Stop();
-                    waveOutEvent.Dispose();
-                    waveOutEvent = null;
+                if (wasapiOut != null) {
+                    wasapiOut.Stop();
+                    wasapiOut.Dispose();
+                    wasapiOut = null;
                 }
             }
         }
 
-        public void SelectDevice(Guid guid, int deviceNumber) {
-            Preferences.Default.PlaybackDevice = guid.ToString();
-            Preferences.Default.PlaybackDeviceNumber = deviceNumber;
+        public void SelectDevice(string id, int deviceNumber) {
+            Preferences.Default.PlaybackDevice = id;
+            Preferences.Default.PlaybackDeviceNumber = deviceNumber; // Device number is irrelevant with wasapi, still used for ordering
             Preferences.Save();
-            // Product guid may not be unique. Use device number first.
-            if (deviceNumber < WaveOut.DeviceCount && WaveOut.GetCapabilities(deviceNumber).ProductGuid == guid) {
-                this.deviceNumber = deviceNumber;
-                return;
-            }
-            // If guid does not match, device number may have changed. Search guid instead.
-            this.deviceNumber = 0;
-            for (int i = 0; i < WaveOut.DeviceCount; ++i) {
-                if (WaveOut.GetCapabilities(i).ProductGuid == guid) {
-                    this.deviceNumber = i;
-                    break;
-                }
+
+            this.deviceNumber = deviceNumber;
+            selectedDeviceID = id;
+
+            var enumerator = new MMDeviceEnumerator();
+
+            try {
+                enumerator.GetDevice(id);
+            } catch (System.Exception) {
+                // Handle the case where the saved device is not available
+                selectedDeviceID = enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Console).ID;
             }
         }
 
         public List<AudioOutputDevice> GetOutputDevices() {
             var outDevices = new List<AudioOutputDevice>();
-            for (int i = 0; i < WaveOut.DeviceCount; ++i) {
-                var capability = WaveOut.GetCapabilities(i);
+            var enumerator = new MMDeviceEnumerator();
+
+            int i = 0;
+            foreach (var device in enumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active)) {
                 outDevices.Add(new AudioOutputDevice {
-                    api = "WaveOut",
-                    name = capability.ProductName,
-                    deviceNumber = i,
-                    guid = capability.ProductGuid,
+                    api = "Wasapi",
+                    name = device.FriendlyName,
+                    deviceNumber = i, // Numerical device IDs are irrelevant with wasapi
+                    wasapiEndpointID = device.ID,
                 });
+                i++;
             }
+
             return outDevices;
         }
     }
