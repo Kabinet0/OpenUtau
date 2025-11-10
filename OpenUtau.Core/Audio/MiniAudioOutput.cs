@@ -78,6 +78,7 @@ namespace OpenUtau.Audio {
                         api = api,
                         deviceNumber = i,
                         guid = new Guid(guidData),
+                        useWASAPIEndpointID = false
                     });
                 }
                 ou_free_audio_device_infos(device_infos, count);
@@ -146,7 +147,7 @@ namespace OpenUtau.Audio {
 
 
         public void SelectDevice(string guid, int deviceNumber) {
-            if (Guid.TryParse(Preferences.Default.PlaybackDevice, out var guidObject)) {
+            if (Guid.TryParse(guid, out var guidObject)) {
                 SelectDevice(guidObject, deviceNumber);
             } else {
                 throw new Exception("Failed to init audio device");
@@ -154,7 +155,7 @@ namespace OpenUtau.Audio {
         }
 
         public void SelectDevice(Guid guid, int deviceNumber) {
-            if (selectedDevice != Guid.Empty && selectedDevice == guid) {
+            if (selectedDevice != Guid.Empty && selectedDevice.Equals(guid)) {
                 return;
             }
             if (nativeContext != IntPtr.Zero) {

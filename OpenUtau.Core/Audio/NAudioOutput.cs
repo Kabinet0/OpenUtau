@@ -14,6 +14,7 @@ namespace OpenUtau.Audio {
 
         private readonly object lockObj = new object();
         private WasapiOut wasapiOut;
+        private MixingSampleProvider mixingSampler;
         private string selectedDeviceID;
 
         public NAudioOutput() {
@@ -41,6 +42,16 @@ namespace OpenUtau.Audio {
 
         public void Init(ISampleProvider sampleProvider) {
             lock (lockObj) {
+                if (sampleProvider.WaveFormat.Channels == 1) {
+                    sampleProvider = new MonoToStereoSampleProvider(sampleProvider);
+                }
+                mixingSampler.RemoveAllMixerInputs();
+                mixingSampler.AddMixerInput(sampleProvider);
+            }
+        }
+
+        private void InitAudioDevice(ISampleProvider sampleProvider) {
+            lock (lockObj) {
                 if (wasapiOut != null) {
                     wasapiOut.Stop();
                     wasapiOut.Dispose();
@@ -48,7 +59,6 @@ namespace OpenUtau.Audio {
 
                 var enumerator = new MMDeviceEnumerator();
 
-                MixingSampleProvider a;
                 try {
                     wasapiOut = new WasapiOut(
                         enumerator.GetDevice(selectedDeviceID),
@@ -85,8 +95,6 @@ namespace OpenUtau.Audio {
             lock (lockObj) {
                 if (wasapiOut != null) {
                     wasapiOut.Stop();
-                    wasapiOut.Dispose();
-                    wasapiOut = null;
                 }
             }
         }
@@ -107,6 +115,11 @@ namespace OpenUtau.Audio {
                 // Handle the case where the saved device is not available
                 selectedDeviceID = enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Console).ID;
             }
+
+            lock (lockObj) {
+                mixingSampler = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(44100, 2));
+            }
+            InitAudioDevice(mixingSampler);
         }
 
         public List<AudioOutputDevice> GetOutputDevices() {
@@ -116,10 +129,11 @@ namespace OpenUtau.Audio {
             int i = 0;
             foreach (var device in enumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active)) {
                 outDevices.Add(new AudioOutputDevice {
-                    api = "Wasapi",
+                    api = "WASAPI",
                     name = device.FriendlyName,
                     deviceNumber = i, // Numerical device IDs are irrelevant with wasapi
                     wasapiEndpointID = device.ID,
+                    useWASAPIEndpointID = true
                 });
                 i++;
             }

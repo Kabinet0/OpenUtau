@@ -197,7 +197,7 @@ namespace OpenUtau.App.ViewModels {
                     if (PlaybackManager.Inst.AudioOutput != null) {
                         try {
                             PlaybackManager.Inst.AudioOutput.SelectDevice(
-                                device.api != "Wasapi" ? device.guid.ToString() : device.wasapiEndpointID, 
+                                device.useWASAPIEndpointID ? device.wasapiEndpointID : device.guid.ToString(),
                                 device.deviceNumber
                              );
                         } catch (Exception e) {

@@ -9,6 +9,7 @@ namespace OpenUtau.Audio {
         public int deviceNumber;
         public Guid guid;
         public string wasapiEndpointID; // Only used on Windows
+        public bool useWASAPIEndpointID;
 
         public override string ToString() => $"[{api}] {name}";
     }
